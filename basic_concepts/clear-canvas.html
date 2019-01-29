@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Clear canvas</title>
+</head>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="640" height="480"></canvas>
+</body>
+
+<script>
+    function init() {
+        // Get canvas object from the DOM
+        var canvas = document.getElementById("myCanvas");
+
+        // Get the rendering context for WebGL
+        var gl = canvas.getContext("webgl");
+        if (!gl) {
+            console.log("Failed to get the rendering context for WebGL");
+            return;
+        }
+
+        // Set clear color
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        // Clear canvas
+        gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+</script>
+
+</html>
