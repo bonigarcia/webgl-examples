@@ -50,11 +50,11 @@
 
     function initShaders(gl, vs_source, fs_source) {
         // Compile shaders
-        vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
-        fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
+        var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
+        var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
 
         // Create program
-        glProgram = gl.createProgram();
+        var glProgram = gl.createProgram();
         
         // Attach and link shaders to the program
         gl.attachShader(glProgram, vertexShader);
