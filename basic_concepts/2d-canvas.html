@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Canvas in 2D</title>
+</head>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="640" height="480"></canvas>
+</body>
+
+<script>
+    function init() {
+        var canvas = document.getElementById("myCanvas");
+        var context = canvas.getContext("2d");
+        context.moveTo(0, 0);
+        context.lineTo(200, 100);
+        context.stroke();
+    }
+</script>
+
+</html>
