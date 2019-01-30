@@ -24,7 +24,7 @@
                     return;
                 }
 
-                // Draw a point
+                // Draw
                 gl.drawArrays(gl.POINTS, 0, 1);
             });
         });
