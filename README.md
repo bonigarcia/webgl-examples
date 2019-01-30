@@ -11,5 +11,5 @@ This is a project made by [Boni Garcia], Assistant Professor at [Universidad Rey
 
 [Universidad Rey Juan Carlos]: https://www.urjc.es/
 [Boni Garcia]: http://bonigarcia.github.io/
-[Logo]: http://bonigarcia.github.io/img/web-programming-examples.png
+[Logo]: http://bonigarcia.github.io/img/webgl.png
 [GitHub Repository]: https://github.com/bonigarcia/web-programming-examples
