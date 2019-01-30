@@ -41,7 +41,10 @@
         // Init shaders
         var vs = document.getElementById('shaderVs').innerHTML;
         var fs = document.getElementById('shaderFs').innerHTML;
-        initShaders(gl, vs, fs);
+        if (!initShaders(gl, vs, fs)) {
+            console.log('Failed to intialize shaders.');
+            return;
+        }
 
         // Draw a point
         gl.drawArrays(gl.POINTS, 0, 1);
@@ -55,20 +58,22 @@
 
         // Create program
         var glProgram = gl.createProgram();
-        
+
         // Attach and link shaders to the program
         gl.attachShader(glProgram, vertexShader);
         gl.attachShader(glProgram, fragmentShader);
         gl.linkProgram(glProgram);
         if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
             alert("Unable to initialize the shader program");
-            return;
+            return false;
         }
 
         // Use program
         gl.useProgram(glProgram);
-    }
+        gl.program = glProgram;
 
+        return true;
+    }
     function makeShader(gl, src, type) {
         var shader = gl.createShader(type);
         gl.shaderSource(shader, src);

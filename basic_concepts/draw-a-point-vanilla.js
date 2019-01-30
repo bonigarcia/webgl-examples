@@ -19,7 +19,10 @@
                 gl.clear(gl.COLOR_BUFFER_BIT);
 
                 // Init shaders		  
-                initShaders(gl, vs, fs);
+                if (!initShaders(gl, vs, fs)) {
+                    console.log('Failed to intialize shaders.');
+                    return;
+                }
 
                 // Draw a point
                 gl.drawArrays(gl.POINTS, 0, 1);
@@ -52,11 +55,14 @@
         gl.linkProgram(glProgram);
         if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
             alert("Unable to initialize the shader program");
-            return;
+            return false;
         }
 
         // Use program
         gl.useProgram(glProgram);
+        gl.program = glProgram;
+
+        return true;
     }
 
     function makeShader(gl, src, type) {
