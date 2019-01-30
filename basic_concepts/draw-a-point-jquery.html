@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Draw a point with vertex and fragment shaders in separate file using jQuery</title>
+</head>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="640" height="480"></canvas>
+</body>
+
+<script id="shaderVs" type="x-shader/x-vertex" src="draw-a-point.vert"></script>
+
+<script id="shaderFs" type="x-shader/x-fragment" src="draw-a-point.frag"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="draw-a-point-jquery.js"></script>
+
+</html>
