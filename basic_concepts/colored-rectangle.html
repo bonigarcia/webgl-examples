@@ -93,8 +93,7 @@
             0, 1, 2,
             0, 2, 3,
         ]);
-        var elementBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elementBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
         // Return number of vertices
