@@ -63,15 +63,15 @@
         }
 
         function drawScene() {
-            // Clear canvas
+            // Clear
             gl.clear(gl.COLOR_BUFFER_BIT);
 
-            // Rotate vertex in x, y, z
+            // Rotate
             var mvMatrix = mat4.fromRotation(mat4.create(), count, [0.5, 0.5, 0.5]);
             var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
             gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
 
-            // Draw cube
+            // Draw
             gl.drawElements(gl.TRIANGLES, 6 * 2 * 3, gl.UNSIGNED_SHORT, 0);
 
             // Call drawScene again in the next browser repaint
