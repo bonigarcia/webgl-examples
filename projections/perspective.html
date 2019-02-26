@@ -55,9 +55,8 @@
             // Set clear canvas color
             gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-            // Set depth defaults
+            // Hidden surface removal
             gl.enable(gl.DEPTH_TEST);
-            gl.depthFunc(gl.LEQUAL);
 
             // Draw Scene
             drawScene();
