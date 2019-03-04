@@ -119,7 +119,7 @@
                 0.5, 0.5, -0.5, 1.0, 0.0,
             ];
 
-            // Indexes (for drawing squares using triangles)
+            // Indexes
             var indexes = [
                 0, 1, 2,
                 0, 2, 3,
@@ -140,7 +140,7 @@
                 20, 22, 23
             ];
 
-            // Write a_Position and a_Color using gl.ARRAY_BUFFER
+            // Write a_Position and a_TexCoord using gl.ARRAY_BUFFER
             gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexesAndTextures), gl.STATIC_DRAW);
 
