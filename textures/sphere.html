@@ -26,7 +26,8 @@
     <script>
         var gl;
         var count = 0.0;
-        var SPHERE_DIV = 15;
+        const SPHERE_DIV = 15;
+        const RADIUS = 1;
 
         function init() {
             // Get canvas object from the DOM
@@ -91,9 +92,9 @@
                     var sj = Math.sin(aj);
                     var cj = Math.cos(aj);
 
-                    vertexesAndTextures.push(si * sj);  // X
-                    vertexesAndTextures.push(ci);       // Y
-                    vertexesAndTextures.push(si * cj);  // Z
+                    vertexesAndTextures.push(RADIUS * si * sj);  // X
+                    vertexesAndTextures.push(RADIUS * ci);       // Y
+                    vertexesAndTextures.push(RADIUS * si * cj);  // Z
 
                     vertexesAndTextures.push(1 - (j / SPHERE_DIV));  // Texture coordinate
                     vertexesAndTextures.push(1 - (i / SPHERE_DIV));  // Texture coordinate
