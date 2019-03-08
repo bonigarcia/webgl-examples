@@ -8,7 +8,7 @@
 
     <script id="shaderVs" type="x-shader/x-vertex">
         attribute vec4 a_Position;
-	    attribute vec2 a_TexCoord;
+        attribute vec2 a_TexCoord;
         varying vec2 v_TexCoord;
 
         uniform mat4 u_pMatrix;
@@ -69,23 +69,6 @@
             initTexturesAndDraw(gl);
         }
 
-        function drawScene() {
-            // Clear
-            gl.clear(gl.COLOR_BUFFER_BIT);
-
-            // Rotate
-            var mvMatrix = mat4.fromRotation(mat4.create(), count, [0, 0.5, 0]);
-            var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
-            gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
-
-            // Draw
-            gl.drawElements(gl.TRIANGLES, SPHERE_DIV * SPHERE_DIV * 3 * 2, gl.UNSIGNED_SHORT, 0);
-
-            // Call drawScene again in the next browser repaint
-            count += 0.01;
-            requestAnimationFrame(drawScene);
-        }
-
         function initVertexShader(gl) {
             // Vertexes and texture coordinates
             var vertexesAndTextures = [];
@@ -93,7 +76,7 @@
                 var ai = i * Math.PI / SPHERE_DIV;
                 var si = Math.sin(ai);
                 var ci = Math.cos(ai);
-                
+
                 for (var j = 0; j <= SPHERE_DIV; j++) {
                     var aj = j * 2 * Math.PI / SPHERE_DIV;
                     var sj = Math.sin(aj);
@@ -180,6 +163,23 @@
 
                 drawScene();
             };
+        }
+
+        function drawScene() {
+            // Clear
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // Rotate
+            var mvMatrix = mat4.fromRotation(mat4.create(), count, [0, 0.5, 0]);
+            var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
+            gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
+
+            // Draw
+            gl.drawElements(gl.TRIANGLES, SPHERE_DIV * SPHERE_DIV * 3 * 2, gl.UNSIGNED_SHORT, 0);
+
+            // Call drawScene again in the next browser repaint
+            count += 0.01;
+            requestAnimationFrame(drawScene);
         }
 
         function initShaders(gl, vs_source, fs_source) {
