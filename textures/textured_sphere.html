@@ -140,29 +140,26 @@
 
         function initTexturesAndDraw(gl) {
             var image = new Image();
-            image.src = 'moon.gif';
+            image.src = 'earth.png';
             image.onload = function () {
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-
-                // Enable texture unit0
-                gl.activeTexture(gl.TEXTURE0);
-
-                // Bind the texture object to the target
-                var texture = gl.createTexture();
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-
-                // Set the texture parameters
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-                // Set the texture image
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-
-                // Set the texture unit 0 to the sampler
-                var fragmentSamplerUniform = gl.getUniformLocation(gl.program, 'u_Sampler');
-                gl.uniform1i(fragmentSamplerUniform, 0);
-
+                loadTexture(gl, "u_Sampler", image, 0, false);
                 drawScene();
             };
+        }
+
+        function loadTexture(gl, samplerUniform, image, unitNumber, flip) {
+            // Flip the image's y axis
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flip);
+
+            // Activate and configure texture
+            gl.activeTexture(gl.TEXTURE0 + unitNumber);
+            gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+            // Set texture to the sampler
+            var fragmentSamplerUniform = gl.getUniformLocation(gl.program, samplerUniform);
+            gl.uniform1i(fragmentSamplerUniform, unitNumber);
         }
 
         function drawScene() {
