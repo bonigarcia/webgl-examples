@@ -106,7 +106,7 @@
             var indexes = [];
             for (var i = 0; i < LATITUDE_BANDS; i++) {
                 for (var j = 0; j < LONGITUDE_BANDS; j++) {
-                    var first = (i * (LONGITUDE_BANDS + 1)) + j;
+                    var first = i * (LONGITUDE_BANDS + 1) + j;
                     var second = first + LONGITUDE_BANDS + 1;
 
                     indexes.push(first);
