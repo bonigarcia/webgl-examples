@@ -64,46 +64,33 @@
         var image1 = new Image();
         image1.src = 'circle.gif';
         image0.onload = function () {
-            loadTexture(gl, "u_Sampler0", image0, 0);
+            loadTexture(gl, "u_Sampler0", image0, 0, true);
             image1.onload = function () {
-                loadTexture(gl, "u_Sampler1", image1, 1);
+                loadTexture(gl, "u_Sampler1", image1, 1, true);
                 drawScene(gl);
             };
         };
+    }
+
+    function loadTexture(gl, samplerUniform, image, unitNumber, flip) {
+        // Flip the image's y axis
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flip);
+
+        // Activate and configure texture
+        gl.activeTexture(gl.TEXTURE0 + unitNumber);
+        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+        // Set texture to the sampler
+        var fragmentSamplerUniform = gl.getUniformLocation(gl.program, samplerUniform);
+        gl.uniform1i(fragmentSamplerUniform, unitNumber);
     }
 
     function drawScene(gl) {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    }
-
-
-    function loadTexture(gl, samplerUniform, image, unitNumber) {
-        // Flip the image's y axis
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-        // Enable texture unit
-        if (unitNumber == 0) {
-            gl.activeTexture(gl.TEXTURE0);
-        }
-        else {
-            gl.activeTexture(gl.TEXTURE1);
-        }
-
-        // Bind the texture object to the target
-        var texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        // Set the texture parameters
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-        // Set the texture image
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-
-        // Set the texture unit 0 to the sampler
-        var fragmentSamplerUniform = gl.getUniformLocation(gl.program, samplerUniform);
-        gl.uniform1i(fragmentSamplerUniform, unitNumber);
     }
 
     function initVertexBuffers(gl) {
