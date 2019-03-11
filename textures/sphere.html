@@ -92,9 +92,9 @@
                     var sinPhi = Math.sin(phi);
                     var cosPhi = Math.cos(phi);
 
-                    var x = cosPhi * sinTheta;
+                    var x = sinPhi * sinTheta;
                     var y = cosTheta;
-                    var z = sinPhi * sinTheta;
+                    var z = cosPhi * sinTheta;
 
                     vertexes.push(RADIUS * x);
                     vertexes.push(RADIUS * y);
@@ -104,10 +104,10 @@
 
             // Indexes
             var indexes = [];
-            for (let i = 0; i < LATITUDE_BANDS; i++) {
-                for (let j = 0; j < LONGITUDE_BANDS; j++) {
-                    let first = (i * (LONGITUDE_BANDS + 1)) + j;
-                    let second = first + LONGITUDE_BANDS + 1;
+            for (var i = 0; i < LATITUDE_BANDS; i++) {
+                for (var j = 0; j < LONGITUDE_BANDS; j++) {
+                    var first = (i * (LONGITUDE_BANDS + 1)) + j;
+                    var second = first + LONGITUDE_BANDS + 1;
 
                     indexes.push(first);
                     indexes.push(second);

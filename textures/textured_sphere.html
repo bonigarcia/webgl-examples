@@ -35,7 +35,9 @@
     <script>
         var gl;
         var count = 0.0;
-        var SPHERE_DIV = 60;
+        const LATITUDE_BANDS = 30;
+        const LONGITUDE_BANDS = 30;
+        const RADIUS = 1;
 
         function init() {
             // Get canvas object from the DOM
@@ -70,41 +72,48 @@
         }
 
         function initVertexShader(gl) {
-            // Vertexes and texture coordinates
+            // Vertexes and textures coordinates
             var vertexesAndTextures = [];
-            for (var i = 0; i <= SPHERE_DIV; i++) {
-                var ai = i * Math.PI / SPHERE_DIV;
-                var si = Math.sin(ai);
-                var ci = Math.cos(ai);
+            for (var i = 0; i <= LATITUDE_BANDS; i++) {
+                var theta = i * Math.PI / LATITUDE_BANDS;
+                var sinTheta = Math.sin(theta);
+                var cosTheta = Math.cos(theta);
 
-                for (var j = 0; j <= SPHERE_DIV; j++) {
-                    var aj = j * 2 * Math.PI / SPHERE_DIV;
-                    var sj = Math.sin(aj);
-                    var cj = Math.cos(aj);
+                for (let j = 0; j <= LONGITUDE_BANDS; j++) {
+                    var phi = j * 2 * Math.PI / LONGITUDE_BANDS;
+                    var sinPhi = Math.sin(phi);
+                    var cosPhi = Math.cos(phi);
 
-                    vertexesAndTextures.push(si * sj);  // X
-                    vertexesAndTextures.push(ci);       // Y
-                    vertexesAndTextures.push(cj * si);  // Z
+                    var x = sinPhi * sinTheta;
+                    var y = cosTheta;
+                    var z = cosPhi * sinTheta;
 
-                    vertexesAndTextures.push(1 - (j / SPHERE_DIV));  // Texture coordinate
-                    vertexesAndTextures.push(1 - (i / SPHERE_DIV));  // Texture coordinate
+                    vertexesAndTextures.push(RADIUS * x);
+                    vertexesAndTextures.push(RADIUS * y);
+                    vertexesAndTextures.push(RADIUS * z);
+
+                    var u = 1 - (j / LONGITUDE_BANDS);
+                    var v = 1 - (i / LATITUDE_BANDS);
+
+                    vertexesAndTextures.push(u);
+                    vertexesAndTextures.push(v);
                 }
             }
 
             // Indexes
             var indexes = [];
-            for (i = 0; i < SPHERE_DIV; i++) {
-                for (j = 0; j < SPHERE_DIV; j++) {
-                    var p1 = i * (SPHERE_DIV + 1) + j;
-                    var p2 = p1 + (SPHERE_DIV + 1);
+            for (var i = 0; i < LATITUDE_BANDS; i++) {
+                for (var j = 0; j < LONGITUDE_BANDS; j++) {
+                    var first = (i * (LONGITUDE_BANDS + 1)) + j;
+                    var second = first + LONGITUDE_BANDS + 1;
 
-                    indexes.push(p1);
-                    indexes.push(p2);
-                    indexes.push(p1 + 1);
+                    indexes.push(first);
+                    indexes.push(second);
+                    indexes.push(first + 1);
 
-                    indexes.push(p1 + 1);
-                    indexes.push(p2);
-                    indexes.push(p2 + 1);
+                    indexes.push(second + 1);
+                    indexes.push(first + 1);
+                    indexes.push(second);
                 }
             }
 
@@ -172,7 +181,7 @@
             gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
 
             // Draw
-            gl.drawElements(gl.TRIANGLES, SPHERE_DIV * SPHERE_DIV * 3 * 2, gl.UNSIGNED_SHORT, 0);
+            gl.drawElements(gl.TRIANGLES, LATITUDE_BANDS * LONGITUDE_BANDS * 3 * 2, gl.UNSIGNED_SHORT, 0);
 
             // Call drawScene again in the next browser repaint
             count += 0.01;
