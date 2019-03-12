@@ -96,10 +96,10 @@
     function initVertexBuffers(gl) {
         // Vertices (x, y) and texture coordinates (s, t)
         var verticesAndTextures = [
-            -0.5, 0.5, 0.0, 1.0,
-            -0.5, -0.5, 0.0, 0.0,
-            0.5, 0.5, 1.0, 1.0,
-            0.5, -0.5, 1.0, 0.0,
+            -0.5, 0.5, 0.0, 1.0, // top-left image corner
+            -0.5, -0.5, 0.0, 0.0, // bottom-left image corner
+            0.5, 0.5, 1.0, 1.0, // top-right image corner
+            0.5, -0.5, 1.0, 0.0, // bottom-right image corner
         ];
 
         gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
