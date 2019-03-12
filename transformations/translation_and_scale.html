@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebGL transformations: translation and scale</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+
+    <script id="shaderVs" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        uniform mat4 u_Matrix;
+        void main() {
+            gl_Position = u_Matrix * a_Position;
+        }
+    </script>
+
+    <script id="shaderFs" type="x-shader/x-fragment">
+        void main() {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+    </script>
+
+    <script>
+        var gl;
+        var count = 0.0;
+
+        function init() {
+            // Get canvas object from the DOM
+            var canvas = document.getElementById("myCanvas");
+
+            // Init WebGL context
+            gl = canvas.getContext("webgl");
+            if (!gl) {
+                console.log("Failed to get the rendering context for WebGL");
+                return;
+            }
+
+            // Init shaders
+            var vs = document.getElementById('shaderVs').innerHTML;
+            var fs = document.getElementById('shaderFs').innerHTML;
+            initShaders(gl, vs, fs);
+
+            // Write the positions of vertices to a vertex shader
+            initVertexBuffers(gl);
+
+            // Set clear canvas color
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+            // Draw Scene
+            drawScene();
+        }
+
+        function drawScene() {
+            // Clear canvas
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // Calcualte new scale
+            var scale = Math.abs(Math.sin(count));
+            var position = Math.sin(count);
+
+            var translated = mat4.fromTranslation(mat4.create(), [position, 0.0, 0.0]);
+            var scaled = mat4.fromScaling(mat4.create(), [scale, scale, 0.0]);
+            var matrix = mat4.multiply(mat4.create(), translated, scaled);
+
+            // Set uniform value (u_Matrix) in vertex shader
+            var mvMatrixUniform = gl.getUniformLocation(gl.program, "u_Matrix");
+            gl.uniformMatrix4fv(mvMatrixUniform, false, matrix);
+
+            // Draw
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+            // Call drawScene again in the next browser repaint
+            count += 0.01;
+            requestAnimationFrame(drawScene);
+        }
+
+        function initVertexBuffers(gl) {
+            // Triangle
+            var vertices = [
+                0, 0.5, 0, // Vertice #1
+                -0.5, -0.5, 0, // Vertice #2
+                0.5, -0.5, 0 // Vertice #3
+            ];
+
+            // Create a buffer object
+            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+            // Assign the vertices in buffer object to a_Position variable
+            var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+            gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(a_Position);
+        }
+
+        function initShaders(gl, vs_source, fs_source) {
+            // Compile shaders
+            var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
+            var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
+
+            // Create program
+            var glProgram = gl.createProgram();
+
+            // Attach and link shaders to the program
+            gl.attachShader(glProgram, vertexShader);
+            gl.attachShader(glProgram, fragmentShader);
+            gl.linkProgram(glProgram);
+
+            // Use program
+            gl.useProgram(glProgram);
+            gl.program = glProgram;
+        }
+
+        function makeShader(gl, src, type) {
+            var shader = gl.createShader(type);
+            gl.shaderSource(shader, src);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                alert("Error compiling shader: " + gl.getShaderInfoLog(shader));
+                return;
+            }
+            return shader;
+        }
+    </script>
+
+</head>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="640" height="480"></canvas>
+</body>
+
+</html>

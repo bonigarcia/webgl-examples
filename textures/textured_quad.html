@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebGL textures: quad</title>
+</head>
+
+<script id="shaderVs" type="x-shader/x-vertex">
+    attribute vec4 a_Position;
+    attribute vec2 a_TexCoord;
+    varying vec2 v_TexCoord;
+    void main(void) {
+        gl_Position = a_Position;
+        v_TexCoord = a_TexCoord;
+    }
+</script>
+
+<script id="shaderFs" type="x-shader/x-fragment">
+    precision highp float;
+    precision mediump float;
+    uniform sampler2D u_Sampler;
+    varying vec2 v_TexCoord;
+    void main(void) {
+        gl_FragColor = texture2D(u_Sampler, v_TexCoord);
+    }
+</script>
+
+<script>
+    function init() {
+        // Get canvas object from the DOM
+        var canvas = document.getElementById("myCanvas");
+
+        // Init WebGL context
+        var gl = canvas.getContext("webgl");
+        if (!gl) {
+            console.log("Failed to get the rendering context for WebGL");
+            return;
+        }
+
+        // Init shaders
+        var vs = document.getElementById('shaderVs').innerHTML;
+        var fs = document.getElementById('shaderFs').innerHTML;
+        if (!initShaders(gl, vs, fs)) {
+            console.log('Failed to intialize shaders.');
+            return;
+        }
+
+        // Init vertices and texture coordinates
+        initVertexBuffers(gl);
+
+        // Set clear color (black)
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        // Init textures
+        initTexturesAndDraw(gl);
+    }
+
+    function initTexturesAndDraw(gl) {
+        var image = new Image();
+        image.src = 'sky.jpg';
+        image.onload = function () {
+            loadTexture(gl, "u_Sampler", image, 0, true);
+            drawScene(gl);
+        };
+    }
+
+    function loadTexture(gl, samplerUniform, image, unitNumber, flip) {
+        // Flip the image's y axis
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flip);
+
+        // Activate and configure texture
+        gl.activeTexture(gl.TEXTURE0 + unitNumber);
+        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+        // Set texture to the sampler
+        var fragmentSamplerUniform = gl.getUniformLocation(gl.program, samplerUniform);
+        gl.uniform1i(fragmentSamplerUniform, unitNumber);
+    }
+
+    function drawScene(gl) {
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    function initVertexBuffers(gl) {
+        // Vertices (x, y) and texture coordinates (s, t)
+        var verticesAndTextures = [
+            -0.5, 0.5, 0.0, 1.0, // top-left image corner
+            -0.5, -0.5, 0.0, 0.0, // bottom-left image corner
+            0.5, 0.5, 1.0, 1.0, // top-right image corner
+            0.5, -0.5, 1.0, 0.0, // bottom-right image corner
+        ];
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesAndTextures), gl.STATIC_DRAW);
+
+        var vertexPositionAttribute = gl.getAttribLocation(gl.program, "a_Position");
+        gl.enableVertexAttribArray(vertexPositionAttribute);
+        gl.vertexAttribPointer(vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 4, 0);
+
+        var vertexTextureAttribute = gl.getAttribLocation(gl.program, "a_TexCoord");
+        gl.enableVertexAttribArray(vertexTextureAttribute);
+        gl.vertexAttribPointer(vertexTextureAttribute, 2, gl.FLOAT, false, 4 * 4, 4 * 2);
+    }
+
+    function initShaders(gl, vs_source, fs_source) {
+        // Compile shaders
+        var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
+        var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
+
+        // Create program
+        var glProgram = gl.createProgram();
+
+        // Attach and link shaders to the program
+        gl.attachShader(glProgram, vertexShader);
+        gl.attachShader(glProgram, fragmentShader);
+        gl.linkProgram(glProgram);
+        if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
+            alert("Unable to initialize the shader program");
+            return false;
+        }
+
+        // Use program
+        gl.useProgram(glProgram);
+        gl.program = glProgram;
+
+        return true;
+    }
+
+    function makeShader(gl, src, type) {
+        var shader = gl.createShader(type);
+        gl.shaderSource(shader, src);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert("Error compiling shader: " + gl.getShaderInfoLog(shader));
+            return;
+        }
+        return shader;
+    }
+</script>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="640" height="480"></canvas>
+</body>
+
+</html>
