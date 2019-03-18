@@ -15,7 +15,6 @@
     varying highp vec4 v_Color;
 
     uniform vec3 u_LightColor;      // Light color
-    uniform vec3 u_LightDirection;  // Light direction (normalized)
     uniform vec3 u_LightPosition;   // Position of the light source
 
     uniform mat4 u_pMatrix;
@@ -185,13 +184,6 @@
       var lightColor = [ 1.0, 1.0, 1.0 ]; // white
       var lightColorUniform = gl.getUniformLocation(gl.program, "u_LightColor");
       gl.uniform3fv(lightColorUniform, lightColor);
-
-      // Write u_LightDirection
-      var lightDirection = [ 2.0, -8.0, -2.0 ];
-      vec3.normalize(lightDirection, lightDirection);
-      var lightDirectionUniform = gl.getUniformLocation(gl.program,
-            "u_LightDirection");
-      gl.uniform3fv(lightDirectionUniform, lightDirection);
 
       // Write u_LightPosition
       var lightPosition = [ 1.0, -5.0, -5.0 ];
