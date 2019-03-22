@@ -4,15 +4,12 @@
 <head>
 <title>Lighting: red cube lit by a white directional light</title>
 
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 
 <script id="shaderVs" type="x-shader/x-vertex">
     attribute vec3 a_Color;     // Surface base color
     attribute vec3 a_Normal;    // Normal (surface orientation)
     attribute vec4 a_Position;
-
-    varying highp vec4 v_Color;
 
     uniform vec3 u_LightColor;      // Light color
     uniform vec3 u_LightDirection;  // Light direction (normalized)
@@ -21,11 +18,14 @@
     uniform mat4 u_vMatrix;
     uniform mat4 u_mvMatrix;
 
+    varying highp vec4 v_Color;
+
     void main(void) {
         gl_Position = u_pMatrix * u_vMatrix * u_mvMatrix * a_Position;
 
         // Dot product of the light direction and the orientation of a surface (the normal)
-        float nDotL = max(dot(u_LightDirection, a_Normal), 0.0);
+        vec3 normal = normalize(a_Normal - vec3(gl_Position));
+        float nDotL = max(dot(u_LightDirection, normal), 0.0);
 
         // Calculate the color due to diffuse reflection
         vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
@@ -35,6 +35,7 @@
 
 <script id="shaderFs" type="x-shader/x-fragment">
     varying highp vec4 v_Color;
+
     void main(void) {
         gl_FragColor = v_Color;
     }
@@ -62,9 +63,6 @@
       // Init vertex shader
       initVertexShader(gl);
 
-      // Init projection matrix
-      initProjection(gl, canvas);
-
       // Set clear canvas color
       gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -72,12 +70,15 @@
       gl.enable(gl.DEPTH_TEST);
 
       // Draw Scene
-      drawScene(gl);
+      drawScene(gl, canvas);
    }
 
-   function drawScene(gl) {
+   function drawScene(gl, canvas) {
       // Clear
       gl.clear(gl.COLOR_BUFFER_BIT);
+
+      // Init projection
+      initProjection(gl, canvas);
 
       // Rotate
       var mvMatrix = mat4.fromRotation(mat4.create(), count, [ 0.0, 1.0, 0.5 ]);
@@ -90,7 +91,7 @@
       // Call drawScene again in the next browser repaint
       count += 0.01;
       requestAnimationFrame(function() {
-         drawScene(gl)
+         drawScene(gl, canvas)
       });
    }
 
@@ -132,8 +133,7 @@
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-      var vertexPositionAttribute = gl.getAttribLocation(gl.program,
-            "a_Position");
+      var vertexPositionAttribute = gl.getAttribLocation(gl.program, "a_Position");
       gl.enableVertexAttribArray(vertexPositionAttribute);
       gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
@@ -172,8 +172,7 @@
       gl.uniformMatrix4fv(pMatrixUniform, false, pMatrix);
 
       // Write u_vMatrix
-      var vMatrix = mat4.lookAt(mat4.create(), [ 0, 0, -3 ], [ 0, 0, 0 ], [ 0,
-            1, 0 ]);
+      var vMatrix = mat4.lookAt(mat4.create(), [ 0, 0, -3 ], [ 0, 0, 0 ], [ 0, 1, 0 ]);
       var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
       gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
 
@@ -183,10 +182,12 @@
       gl.uniform3fv(lightColorUniform, lightColor);
 
       // Write u_LightDirection
-      var lightDirection = [ 2.0, -8.0, -2.0 ];
+      var x = document.getElementById("x").value;
+      var y = document.getElementById("y").value;
+      var z = document.getElementById("z").value;
+      var lightDirection = [ x, y, z ];
       vec3.normalize(lightDirection, lightDirection);
-      var lightDirectionUniform = gl.getUniformLocation(gl.program,
-            "u_LightDirection");
+      var lightDirectionUniform = gl.getUniformLocation(gl.program, "u_LightDirection");
       gl.uniform3fv(lightDirectionUniform, lightDirection);
    }
 
@@ -223,7 +224,12 @@
 </head>
 
 <body onload="init()">
-    <canvas id="myCanvas" width="640" height="480"></canvas>
+    <canvas id="myCanvas" width="640" height="480"></canvas><br>
+
+    <b>Light direction</b><br>
+    <input type="range" id="x" min="-20" max="20" value="2" step="1">X<br>
+    <input type="range" id="y" min="-20" max="20" value="-8" step="1">Y<br>
+    <input type="range" id="z" min="-20" max="20" value="-8" step="1">Z<br>
 </body>
 
 </html>
