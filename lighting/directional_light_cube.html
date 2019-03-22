@@ -2,18 +2,17 @@
 <html>
 
 <head>
-<title>Lighting: red cube lit by a white directional light</title>
+<title>Lighting: red cube lit by directional light</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 
 <script id="shaderVs" type="x-shader/x-vertex">
-    attribute vec3 a_Color;     // Surface base color
-    attribute vec3 a_Normal;    // Normal (surface orientation)
+    attribute vec3 a_Color;
+    attribute vec3 a_Normal;
     attribute vec4 a_Position;
 
-    uniform vec3 u_LightColor;      // Light color
-    uniform vec3 u_LightDirection;  // Light direction (normalized)
-
+    uniform vec3 u_LightColor;
+    uniform vec3 u_LightDirection;
     uniform mat4 u_pMatrix;
     uniform mat4 u_vMatrix;
     uniform mat4 u_mvMatrix;
@@ -23,11 +22,9 @@
     void main(void) {
         gl_Position = u_pMatrix * u_vMatrix * u_mvMatrix * a_Position;
 
-        // Dot product of the light direction and the orientation of a surface (the normal)
         vec3 normal = normalize(a_Normal - vec3(gl_Position));
         float nDotL = max(dot(u_LightDirection, normal), 0.0);
 
-        // Calculate the color due to diffuse reflection
         vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
         v_Color = vec4(diffuse, 1.0);
     }

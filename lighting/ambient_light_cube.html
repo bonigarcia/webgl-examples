@@ -2,15 +2,16 @@
 <html>
 
 <head>
-<title>Lighting: red cube lit by a white ambient light</title>
+<title>Lighting: red cube lit by ambient light</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 
 <script id="shaderVs" type="x-shader/x-vertex">
     attribute vec4 a_Position;
-    attribute vec3 a_Color;     // Surface base color
+    attribute vec3 a_Color;
 
-    uniform vec3 u_AmbientLight;    // Ambient light color
+    uniform vec3 u_AmbientLight;
+
     uniform mat4 u_pMatrix;
     uniform mat4 u_vMatrix;
     uniform mat4 u_mvMatrix;
@@ -21,7 +22,6 @@
         vec4 vertexPosition = u_mvMatrix * a_Position;
         gl_Position = u_pMatrix * u_vMatrix * vertexPosition;
 
-        // Calculate the color due to ambient reflection
         vec3 ambient = u_AmbientLight * a_Color;
         v_Color = vec4(ambient, 1.0);
     }
