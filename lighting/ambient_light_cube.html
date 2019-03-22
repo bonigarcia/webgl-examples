@@ -4,21 +4,18 @@
 <head>
 <title>Lighting: red cube lit by a white ambient light</title>
 
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 
 <script id="shaderVs" type="x-shader/x-vertex">
-    attribute vec3 a_Color;     // Surface base color
-    attribute vec3 a_Normal;    // Normal (surface orientation)
     attribute vec4 a_Position;
-
-    varying highp vec4 v_Color;
+    attribute vec3 a_Color;     // Surface base color
 
     uniform vec3 u_AmbientLight;    // Ambient light color
-
     uniform mat4 u_pMatrix;
     uniform mat4 u_vMatrix;
     uniform mat4 u_mvMatrix;
+	
+    varying highp vec4 v_Color;
 
     void main(void) {
         vec4 vertexPosition = u_mvMatrix * a_Position;
@@ -32,6 +29,7 @@
 
 <script id="shaderFs" type="x-shader/x-fragment">
     varying highp vec4 v_Color;
+
     void main(void) {
         gl_FragColor = v_Color;
     }
@@ -59,9 +57,6 @@
       // Init vertex shader
       initVertexShader(gl);
 
-      // Init projection matrix
-      initProjection(gl, canvas);
-
       // Set clear canvas color
       gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -69,12 +64,15 @@
       gl.enable(gl.DEPTH_TEST);
 
       // Draw Scene
-      drawScene(gl);
+      drawScene(gl, canvas);
    }
 
-   function drawScene(gl) {
+   function drawScene(gl, canvas) {
       // Clear
       gl.clear(gl.COLOR_BUFFER_BIT);
+
+      // Init projection
+      initProjection(gl, canvas);
 
       // Rotate
       var mvMatrix = mat4.fromRotation(mat4.create(), count, [ 0.0, 1.0, 0.5 ]);
@@ -87,7 +85,7 @@
       // Call drawScene again in the next browser repaint
       count += 0.01;
       requestAnimationFrame(function() {
-         drawScene(gl)
+         drawScene(gl, canvas)
       });
    }
 
@@ -110,20 +108,11 @@
 
       var colors = new Float32Array([ // Colors
       1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // v0-v1-v2-v3 front
-      1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // v0-v3-v4-v5 right
-      1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // v0-v5-v6-v1 up
-      1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // v1-v6-v7-v2 left
-      1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, // v7-v4-v3-v2 down
-      1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 // v4-v7-v6-v5 back
-      ]);
-
-      var normals = new Float32Array([ // Normal
-      0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, // v0-v1-v2-v3 front
-      1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, // v0-v3-v4-v5 right
-      0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v5-v6-v1 up
-      -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, // v1-v6-v7-v2 left
-      0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, // v7-v4-v3-v2 down
-      0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0 // v4-v7-v6-v5 back
+      0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, // v0-v3-v4-v5 right
+      0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // v0-v5-v6-v1 up
+      1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, // v1-v6-v7-v2 left
+      0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, // v7-v4-v3-v2 down
+      1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1 // v4-v7-v6-v5 back
       ]);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
@@ -140,13 +129,6 @@
       var vertexColorAttribute = gl.getAttribLocation(gl.program, "a_Color");
       gl.enableVertexAttribArray(vertexColorAttribute);
       gl.vertexAttribPointer(vertexColorAttribute, 3, gl.FLOAT, false, 0, 0);
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-      gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
-
-      var vertexNormalAttribute = gl.getAttribLocation(gl.program, "a_Normal");
-      gl.enableVertexAttribArray(vertexNormalAttribute);
-      gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
 
       // Indices of the vertices
       var indices = new Uint8Array([ 0, 1, 2, 0, 2, 3, // front
@@ -169,20 +151,15 @@
       gl.uniformMatrix4fv(pMatrixUniform, false, pMatrix);
 
       // Write u_vMatrix
-      var vMatrix = mat4.lookAt(mat4.create(), [ 0, 0, -3 ], [ 0, 0, 0 ], [ 0,
-            1, 0 ]);
+      var vMatrix = mat4.lookAt(mat4.create(), [ 0, 0, -3 ], [ 0, 0, 0 ], [ 0, 1, 0 ]);
       var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
       gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
 
-      // Write u_LightPosition
-      var lightPosition = [ 1.0, -5.0, -5.0 ];
-      vec3.normalize(lightPosition, lightPosition);
-      var lightPositionUniform = gl.getUniformLocation(gl.program,
-            "u_LightPosition");
-      gl.uniform3fv(lightPositionUniform, lightPosition);
-
       // Write u_AmbientLight
-      var ambientLight = [ 0.5, 0.5, 0.5 ];
+      var r = document.getElementById("r").value;
+      var g = document.getElementById("g").value;
+      var b = document.getElementById("b").value;
+      var ambientLight = [ r, g, b ];
       var ambientLightUniform = gl.getUniformLocation(gl.program, "u_AmbientLight");
       gl.uniform3fv(ambientLightUniform, ambientLight);
    }
@@ -220,7 +197,12 @@
 </head>
 
 <body onload="init()">
-    <canvas id="myCanvas" width="640" height="480"></canvas>
+    <canvas id="myCanvas" width="640" height="480"></canvas><br>
+
+    <b>Light color</b><br>
+    <input type="range" id="r" min="0" max="1" value="0.5" step="0.01">R<br>
+    <input type="range" id="g" min="0" max="1" value="0.5" step="0.01">G<br>
+    <input type="range" id="b" min="0" max="1" value="0.5" step="0.01">B<br>
 </body>
 
 </html>
