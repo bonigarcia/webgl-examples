@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Wireframe</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+
+<script>
+   function init() {
+      var scene = new THREE.Scene();
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
+
+      var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
+      camera.position.set(3, 3, 3);
+      camera.lookAt(scene.position);
+
+      var geometry = new THREE.SphereBufferGeometry(2, 20, 20);
+      var wireframe = new THREE.WireframeGeometry(geometry);
+      var sphere = new THREE.LineSegments(wireframe);
+      sphere.material.color = { r:1, g:1, b:1 };
+      sphere.material.transparent = true;
+      sphere.material.opacity = 0.5;
+      scene.add(sphere);
+      
+      var axes = new THREE.AxesHelper(3);
+      scene.add(axes);
+
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      animate(sphere, renderer, scene, camera);
+   }
+
+   function animate(mesh, renderer, scene, camera) {
+      mesh.rotation.y += 0.01;
+      renderer.render(scene, camera);
+
+      requestAnimationFrame(function() {
+         animate(mesh, renderer, scene, camera);
+      });
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
