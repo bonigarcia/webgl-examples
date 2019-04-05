@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Geometries</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+
+<script>
+   function init() {
+      // Scene
+      var scene = new THREE.Scene();
+
+      // Renderer
+      var renderer = new THREE.WebGLRenderer();
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Axes helper
+      var axes = new THREE.AxesHelper(20);
+      scene.add(axes);
+
+      // Plane
+      var planeGeometry = new THREE.PlaneGeometry(60, 20);
+      var planeMaterial = new THREE.MeshBasicMaterial({
+         color : 0xAAAAAA
+      });
+      var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+      plane.rotation.x = -0.5 * Math.PI;
+      plane.position.set(15, 0, 0);
+
+      scene.add(plane);
+
+      // Cube
+      var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
+      var cubeMaterial = new THREE.MeshBasicMaterial({
+         color : 0xFF0000,
+         wireframe : true
+      });
+      var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+      cube.position.set(-4, 3, 0);
+
+      scene.add(cube);
+
+      // Sphere
+      var sphereGeometry = new THREE.SphereGeometry(4, 20, 20);
+      var sphereMaterial = new THREE.MeshBasicMaterial({
+         color : 0x7777FF,
+         wireframe : true
+      });
+      var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+      sphere.position.set(20, 4, 2);
+
+      scene.add(sphere);
+
+      // Camera
+      var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
+      camera.position.set(-20, 20, 20);
+      camera.lookAt(scene.position);
+      
+      // Render
+      renderer.render(scene, camera);
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
