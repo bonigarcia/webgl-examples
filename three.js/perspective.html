@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Perspective with controls</title>
+
+<style>
+* {
+   margin: 0px;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+
+<script>
+   function init() {
+      var scene = new THREE.Scene();
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
+
+      var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight,
+            0.01, 100);
+
+      console.log(camera.far)
+      camera.position.z = 25;
+
+      var geometry = new THREE.BoxGeometry(15, 15, 15);
+      var material = new THREE.MeshNormalMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Control
+      var control = new function() {
+         this.fov = camera.fov;
+         this.aspect = camera.aspect;
+         this.far = camera.far;
+         this.near = camera.near;
+
+         this.updateCamera = function() {
+            camera.fov = control.fov;
+            camera.aspect = control.aspect;
+            camera.near = control.near;
+            camera.far = control.far;
+            camera.updateProjectionMatrix();
+         }
+      };
+
+      var gui = new dat.GUI();
+      gui.add(control, 'fov', 0, 180).onChange(control.updateCamera);
+      gui.add(control, 'aspect', 0, 4).onChange(control.updateCamera);
+      gui.add(control, 'near', 0, 40).onChange(control.updateCamera);
+      gui.add(control, 'far', 0, 1000).onChange(control.updateCamera);
+
+      animate(mesh, renderer, scene, camera);
+   }
+
+   function animate(mesh, renderer, scene, camera) {
+      mesh.rotation.x += 0.01;
+      mesh.rotation.y += 0.02;
+
+      renderer.render(scene, camera);
+
+      requestAnimationFrame(function() {
+         animate(mesh, renderer, scene, camera);
+      });
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
