@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Textures (Physical material)</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+
+<script>
+   function init() {
+      var scene = new THREE.Scene();
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
+
+      var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
+      camera.position.z = 5;
+
+      var geometry = new THREE.BoxGeometry(2, 2, 2);
+
+      var texture = new THREE.TextureLoader().load("texture.png")
+      var material = new THREE.MeshPhysicalMaterial({
+         map : texture
+      });
+
+      var mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      var light = new THREE.DirectionalLight(0xffffff, 3.0);
+      light.position.set(10, 10, 10);
+      scene.add(light);
+
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      animate(mesh, renderer, scene, camera);
+   }
+
+   function animate(mesh, renderer, scene, camera) {
+      mesh.rotation.x += 0.01;
+      mesh.rotation.y += 0.02;
+
+      renderer.render(scene, camera);
+
+      requestAnimationFrame(function() {
+         animate(mesh, renderer, scene, camera);
+      });
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
