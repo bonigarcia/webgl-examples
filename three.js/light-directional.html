@@ -15,9 +15,7 @@
       var sceneHeight = window.innerHeight;
 
       var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
-      camera.position.x = 0;
-      camera.position.y = -10;
-      camera.position.z = 15;
+      camera.position.set(0, -10, 15);
       camera.lookAt(scene.position);
 
       var renderer = new THREE.WebGLRenderer({
@@ -64,7 +62,7 @@
 
       return mesh;
    }
-
+   
    function getSphere() {
       var geometry = new THREE.SphereGeometry(1, 20, 20);
       var material = new THREE.MeshNormalMaterial();
@@ -77,7 +75,7 @@
 
    function getLight() {
       var light = new THREE.DirectionalLight();
-      light.position.copy(new THREE.Vector3(50, 30, 50));
+      light.position.set(20, 20, 20);
       light.castShadow = true;
       light.shadow.camera.near = 25;
       light.shadow.camera.far = 200;
@@ -87,7 +85,6 @@
       light.shadow.camera.bottom = -50;
       light.shadow.mapSize.width = 4096;
       light.shadow.mapSize.height = 4096;
-
       return light;
    }
 </script>

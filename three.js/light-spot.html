@@ -15,9 +15,7 @@ function init() {
    var sceneHeight = window.innerHeight;
 
    var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
-   camera.position.x = 0;
-   camera.position.y = -10;
-   camera.position.z = 15;
+   camera.position.set(0, -10, 15);
    camera.lookAt(scene.position);
 
    var renderer = new THREE.WebGLRenderer({
@@ -88,8 +86,7 @@ function getSphere() {
       var light = new THREE.SpotLight();
       light.angle = Math.PI / 8;
       light.exponent = 30;
-      light.position.copy(new THREE.Vector3(-30, 30, 30));
-
+      light.position.set(-30, 30, 30);
       light.shadow.camera.near = 50;
       light.shadow.camera.far = 200;
       light.shadow.camera.fov = 35;
