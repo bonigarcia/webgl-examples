@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Follow object</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+
+<script>
+   var step = 0;
+
+   function init() {
+      var scene = new THREE.Scene();
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
+
+      var camera = new THREE.PerspectiveCamera(45, sceneWidth / sceneHeight, 0.01, 100);
+      camera.position.x = 0;
+      camera.position.y = -20;
+      camera.position.z = 40;
+      camera.lookAt(scene.position);
+
+      var floor = getFloor();
+      var sphere = getSphere();
+
+      scene.add(floor);
+      scene.add(sphere);
+
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      animate(sphere, renderer, scene, camera);
+   }
+
+   function animate(sphere, renderer, scene, camera) {
+      sphere.position.y = 10 * Math.cos(step);
+      sphere.position.z = 7 * Math.abs(Math.sin(step))
+      camera.lookAt(sphere.position);
+
+      renderer.render(scene, camera);
+      step += 0.02;
+
+      requestAnimationFrame(function() {
+         animate(sphere, renderer, scene, camera);
+      });
+   }
+
+   function getFloor() {
+      var geometry = new THREE.PlaneGeometry(10, 20);
+      var material = new THREE.MeshBasicMaterial({
+         color : 0xAAAAAA
+      });
+      var mesh = new THREE.Mesh(geometry, material);
+      return mesh;
+   }
+
+   function getSphere() {
+      var geometry = new THREE.SphereGeometry(1, 20, 20);
+      var material = new THREE.MeshNormalMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.z = 1;
+      return mesh;
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
