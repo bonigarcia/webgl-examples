@@ -2,7 +2,7 @@
 <html>
 
 <head>
-<title>Three.js: Perspective with controls</title>
+<title>Three.js: Perspective camera with controls</title>
 
 <style>
 * {
@@ -21,8 +21,6 @@
 
       var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight,
             0.01, 100);
-
-      console.log(camera.far)
       camera.position.z = 25;
 
       var geometry = new THREE.BoxGeometry(15, 15, 15);
