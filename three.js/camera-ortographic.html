@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Orthographic camera</title>
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+
+<script>
+   function init() {
+      var scene = new THREE.Scene();
+      var sceneWidth = 800;
+      var sceneHeight = 800;
+
+      var camera = new THREE.OrthographicCamera();
+      camera.left = sceneWidth / -2;
+      camera.right = sceneWidth / 2;
+      camera.top = sceneHeight / 2;
+      camera.bottom = sceneHeight / -2;
+      camera.near = 0.1;
+      camera.far = 300;
+      camera.position.z = 10;
+      
+      var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+      var material = new THREE.MeshNormalMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      animate(mesh, renderer, scene, camera);
+   }
+
+   function animate(mesh, renderer, scene, camera) {
+      mesh.rotation.x += 0.01;
+      mesh.rotation.y += 0.02;
+
+      renderer.render(scene, camera);
+
+      requestAnimationFrame(function() {
+         animate(mesh, renderer, scene, camera);
+      });
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
