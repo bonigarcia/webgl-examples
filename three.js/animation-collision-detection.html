@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Collision detection</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+
+<script>
+   var stepX = 0.15;
+   var stepY = 0.25;
+
+   function init() {
+      var scene = new THREE.Scene();
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
+
+      var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
+      camera.position.set(0, -10, 15);
+      camera.lookAt(scene.position);
+
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+      renderer.shadowMap.enabled = true;
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      var light = getLight();
+      var leftBorder = getBorder("left", 1, 20, 2, -5, 0, 0);
+      var rightBorder = getBorder("right", 1, 20, 2, 5, 0, 0);
+      var topBorder = getBorder("top", 11, 1, 2, 0, 10, 0);
+      var downBorder = getBorder("down", 9, 1, 2, 0, -9.5, 0);
+      var sphere = getSphere();
+      var floor = getFloor();
+
+      scene.add(light);
+      scene.add(leftBorder);
+      scene.add(rightBorder);
+      scene.add(topBorder);
+      scene.add(downBorder);
+      scene.add(sphere);
+      scene.add(floor);
+
+      var borders = [ leftBorder, rightBorder, topBorder, downBorder ];
+
+      animate(sphere, borders, renderer, scene, camera);
+   }
+
+   function animate(sphere, borders, renderer, scene, camera) {
+      checkCollision(sphere, borders);
+      
+      sphere.position.x += stepX;
+      sphere.position.y += stepY;
+
+      renderer.render(scene, camera);
+
+      requestAnimationFrame(function() {
+         animate(sphere, borders, renderer, scene, camera);
+      });
+   }
+
+   function getLight() {
+      var light = new THREE.DirectionalLight();
+      light.position.set(20, 20, 20);
+
+      light.castShadow = true;
+      light.shadow.camera.near = 25;
+      light.shadow.camera.far = 200;
+      light.shadow.camera.left = -150;
+      light.shadow.camera.right = 150;
+      light.shadow.camera.top = 50;
+      light.shadow.camera.bottom = -50;
+      light.shadow.mapSize.width = 4096;
+      light.shadow.mapSize.height = 4096;
+
+      return light;
+   }
+
+   function getSphere() {
+      var geometry = new THREE.SphereGeometry(1, 20, 20);
+      var material = new THREE.MeshNormalMaterial();
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.z = 1;
+      mesh.castShadow = true;
+      mesh.name = "sphere";
+
+      return mesh;
+   }
+
+   function getFloor() {
+      var geometry = new THREE.PlaneGeometry(10, 20);
+      var mesh = new THREE.Mesh(geometry, getWoodMaterial());
+      mesh.receiveShadow = true;
+
+      return mesh;
+   }
+
+   function getBorder(name, x, y, z, posX, posY, posZ) {
+      var geometry = new THREE.BoxGeometry(x, y, z);
+      var mesh = new THREE.Mesh(geometry, getWoodMaterial());
+      mesh.receiveShadow = true;
+      mesh.position.set(posX, posY, posZ);
+      mesh.name = name;
+
+      return mesh;
+   }
+
+   function getWoodMaterial() {
+      var texture = new THREE.TextureLoader().load("wood.png");
+      var material = new THREE.MeshPhysicalMaterial({
+         map : texture
+      });
+      material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
+      material.map.repeat.set(4, 4);
+      material.side = THREE.DoubleSide;
+
+      return material;
+   }
+
+   function checkCollision(sphere, borders) {
+      borders.forEach(function(border) {
+         border.material.transparent = false;
+         border.material.opacity = 1.0;
+      });
+      var originPosition = sphere.position.clone();
+
+      for (var i = 0; i < sphere.geometry.vertices.length; i++) {
+         var localVertex = sphere.geometry.vertices[i].clone();
+         var globalVertex = localVertex.applyMatrix4(sphere.matrix);
+         var directionVector = globalVertex.sub(sphere.position);
+         var ray = new THREE.Raycaster(originPosition, directionVector.clone().normalize());
+         var collisionResults = ray.intersectObjects(borders);
+         if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+            collisionResults[0].object.material.transparent = true;
+            collisionResults[0].object.material.opacity = 0.5;
+            if (collisionResults[0].object.name == "left" || collisionResults[0].object.name == "right") {
+               stepX *= -1;
+            }
+            if (collisionResults[0].object.name == "down" || collisionResults[0].object.name == "top") {
+               stepY *= -1;
+            }            
+            break;
+         }
+      }
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
