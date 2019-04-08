@@ -76,6 +76,7 @@
    function getLight() {
       var light = new THREE.DirectionalLight();
       light.position.set(20, 20, 20);
+
       light.castShadow = true;
       light.shadow.camera.near = 25;
       light.shadow.camera.far = 200;
@@ -85,6 +86,7 @@
       light.shadow.camera.bottom = -50;
       light.shadow.mapSize.width = 4096;
       light.shadow.mapSize.height = 4096;
+
       return light;
    }
 </script>
