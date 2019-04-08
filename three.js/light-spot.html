@@ -26,10 +26,12 @@ function init() {
    var floor = getFloor();
    var sphere = getSphere();
    var light = getLight();
+   var ambientLight = getAmbientLight();
 
    scene.add(floor);
    scene.add(sphere);
    scene.add(light);
+   scene.add(ambientLight);
 
    renderer.setSize(sceneWidth, sceneHeight);
    document.body.appendChild(renderer.domElement);
@@ -79,22 +81,29 @@ function getSphere() {
       var mesh = new THREE.Mesh(geometry, material);
       mesh.position.z = 1;
       mesh.castShadow = true;
+
       return mesh;
    }
 
    function getLight() {
       var light = new THREE.SpotLight();
-      light.angle = Math.PI / 8;
-      light.exponent = 30;
       light.position.set(-30, 30, 30);
+      light.angle = Math.PI / 30;
+      light.exponent = 30;
+
+      light.castShadow = true;
       light.shadow.camera.near = 50;
       light.shadow.camera.far = 200;
       light.shadow.camera.fov = 35;
       light.shadow.mapSize.width = 4096;
       light.shadow.mapSize.height = 4096;
-      
-      light.castShadow = true;
-      
+
+      return light;
+   }
+
+   function getAmbientLight() {
+      var light = new THREE.AmbientLight(0xFFFFFF);
+
       return light;
    }
 </script>
