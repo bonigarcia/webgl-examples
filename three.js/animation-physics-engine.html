@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Three.js: Using physics engine</title>
+
+<style>
+* {
+	margin: 0px;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+<script src="js/physi.js"></script>
+
+<script>
+   Physijs.scripts.worker = 'js/physijs_worker.js';
+
+   function init() {
+      var scene = new Physijs.Scene;
+      scene.setGravity(new THREE.Vector3(0, -10, 0));
+
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
+
+      var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
+      camera.position.set(0, -10, 15);
+      camera.lookAt(scene.position);
+
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+      renderer.shadowMap.enabled = true;
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+
+      var light = getLight();
+      var leftBorder = getBorder("left", 1, 20, 5, -5, 0, 0);
+      var rightBorder = getBorder("right", 1, 20, 5, 5, 0, 0);
+      var topBorder = getBorder("top", 11, 1, 5, 0, 10, 0);
+      var downBorder = getBorder("down", 9, 1, 5, 0, -9.5, 0);
+      var sphere = getSphere();
+      var floor = getFloor();
+
+      scene.add(light);
+      scene.add(leftBorder);
+      scene.add(rightBorder);
+      scene.add(topBorder);
+      scene.add(downBorder);
+      scene.add(sphere);
+      scene.add(floor);
+
+      // Control
+      var control = new function() {
+         this.gravityX = 0;
+         this.gravityY = -10;
+         this.gravityZ = 0;
+
+         this.updateGravity = function() {
+            scene.setGravity(new THREE.Vector3(control.gravityX, control.gravityY, control.gravityZ));
+         }
+      };
+
+      var gui = new dat.GUI();
+      gui.add(control, 'gravityX', -50, 50).onChange(control.updateGravity);
+      gui.add(control, 'gravityY', -50, 50).onChange(control.updateGravity);
+      gui.add(control, 'gravityZ', -50, 50).onChange(control.updateGravity);
+
+      animate(sphere, renderer, scene, camera);
+   }
+
+   function animate(sphere, renderer, scene, camera) {
+      scene.simulate();
+      renderer.render(scene, camera);
+
+      requestAnimationFrame(function() {
+         animate(sphere, renderer, scene, camera);
+      });
+   }
+
+   function getLight() {
+      var light = new THREE.DirectionalLight();
+      light.position.set(20, 20, 20);
+
+      light.castShadow = true;
+      light.shadow.camera.near = 25;
+      light.shadow.camera.far = 200;
+      light.shadow.camera.left = -150;
+      light.shadow.camera.right = 150;
+      light.shadow.camera.top = 50;
+      light.shadow.camera.bottom = -50;
+      light.shadow.mapSize.width = 4096;
+      light.shadow.mapSize.height = 4096;
+
+      return light;
+   }
+
+   function getSphere() {
+      var geometry = new THREE.SphereGeometry(1, 20, 20);
+      var material = new THREE.MeshNormalMaterial();
+      var mesh = new Physijs.BoxMesh(geometry, material);
+      mesh.position.z = 1;
+      mesh.castShadow = true;
+      mesh.name = "sphere";
+
+      mesh.addEventListener('collision', function(otherObject) {
+         console.log(otherObject.name);
+      });
+
+      return mesh;
+   }
+
+   function getFloor() {
+      var geometry = new THREE.PlaneGeometry(10, 20);
+      var mesh = new Physijs.BoxMesh(geometry, getWoodMaterial(), 0);
+      mesh.receiveShadow = true;
+      mesh.name = "floor";
+
+      return mesh;
+   }
+
+   function getBorder(name, x, y, z, posX, posY, posZ) {
+      var geometry = new THREE.BoxGeometry(x, y, z);
+      var mesh = new Physijs.BoxMesh(geometry, getWoodMaterial(), 0);
+      mesh.receiveShadow = true;
+      mesh.position.set(posX, posY, posZ);
+      mesh.name = name;
+
+      return mesh;
+   }
+
+   function getWoodMaterial() {
+      var texture = new THREE.TextureLoader().load("wood.png");
+      var material = new THREE.MeshPhysicalMaterial({
+         map : texture
+      });
+      material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
+      material.map.repeat.set(4, 4);
+      material.side = THREE.DoubleSide;
+
+      return material;
+   }
+</script>
+</head>
+
+<body onload="init()">
+</body>
+
+</html>
