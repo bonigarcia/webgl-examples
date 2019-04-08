@@ -7,104 +7,73 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
 
 <script>
-var step = 0;
+   function init() {
+      var scene = new THREE.Scene();
+      var sceneWidth = window.innerWidth;
+      var sceneHeight = window.innerHeight;
 
-function init() {
-   var scene = new THREE.Scene();
-   var sceneWidth = window.innerWidth;
-   var sceneHeight = window.innerHeight;
+      var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
+      camera.position.set(0, -10, 15);
+      camera.lookAt(scene.position);
 
-   var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
-   camera.position.set(0, -10, 15);
-   camera.lookAt(scene.position);
+      var renderer = new THREE.WebGLRenderer({
+         antialias : true
+      });
+      renderer.shadowMap.enabled = true;
+      renderer.setSize(sceneWidth, sceneHeight);
+      document.body.appendChild(renderer.domElement);
+      var render = function() {
+         renderer.render(scene, camera);
+      };
 
-   var renderer = new THREE.WebGLRenderer({
-      antialias : true
-   });
-   renderer.shadowMapEnabled = true;
+      addLight(scene);
+      addSphere(scene);
+      addFloor(scene, render);
+   }
 
-   var floor = getFloor();
-   var sphere = getSphere();
-   var light = getLight();
-   var ambientLight = getAmbientLight();
+   function addLight(scene) {
+      var spotLight = new THREE.SpotLight();
+      spotLight.position.set(-30, 30, 30);
+      spotLight.angle = Math.PI / 30;
+      spotLight.exponent = 30;
 
-   scene.add(floor);
-   scene.add(sphere);
-   scene.add(light);
-   scene.add(ambientLight);
+      spotLight.castShadow = true;
+      spotLight.shadow.camera.near = 50;
+      spotLight.shadow.camera.far = 200;
+      spotLight.shadow.camera.fov = 35;
+      spotLight.shadow.mapSize.width = 4096;
+      spotLight.shadow.mapSize.height = 4096;
 
-   renderer.setSize(sceneWidth, sceneHeight);
-   document.body.appendChild(renderer.domElement);
+      scene.add(spotLight);
+      
+      var ambientLight = new THREE.AmbientLight(0xFFFFFF);
 
-   animate(sphere, renderer, scene, camera);
-}
+      scene.add(ambientLight);
+   }
 
-function animate(sphere, renderer, scene, camera) {
-   sphere.position.y = 10 * Math.cos(step);
-   sphere.position.z = 1 + 3 * Math.abs(Math.sin(step))
-
-   renderer.render(scene, camera);
-   step += 0.02;
-
-   requestAnimationFrame(function() {
-      animate(sphere, renderer, scene, camera);
-   });
-}
-
-function getFloor() {
-   var geometry = new THREE.PlaneGeometry(10, 20);
-   var material = new THREE.MeshPhysicalMaterial({
-      map : new THREE.TextureLoader().load("wood.png")
-   });
-   material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
-   material.map.repeat.set(4, 4);
-   material.side = THREE.DoubleSide;
-   var mesh = new THREE.Mesh(geometry, material);
-   mesh.receiveShadow = true;
-
-   return mesh;
-}
-
-function getSphere() {
-   var geometry = new THREE.SphereGeometry(1, 20, 20);
-   var material = new THREE.MeshNormalMaterial();
-   var mesh = new THREE.Mesh(geometry, material);
-   mesh.position.z = 1;
-   mesh.castShadow = true;
-
-   return mesh;
-}
-
-   function getSphere() {
+   function addSphere(scene) {
       var geometry = new THREE.SphereGeometry(1, 20, 20);
       var material = new THREE.MeshNormalMaterial();
       var mesh = new THREE.Mesh(geometry, material);
       mesh.position.z = 1;
       mesh.castShadow = true;
 
-      return mesh;
+      scene.add(mesh);
    }
 
-   function getLight() {
-      var light = new THREE.SpotLight();
-      light.position.set(-30, 30, 30);
-      light.angle = Math.PI / 30;
-      light.exponent = 30;
+   function addFloor(scene, render) {
+      var geometry = new THREE.PlaneGeometry(10, 20);
+      var texture = new THREE.TextureLoader().load("wood.png", render);
+      var material = new THREE.MeshPhysicalMaterial({
+         map : texture
+      });
+      material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
+      material.map.repeat.set(4, 4);
+      material.side = THREE.DoubleSide;
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.receiveShadow = true;
 
-      light.castShadow = true;
-      light.shadow.camera.near = 50;
-      light.shadow.camera.far = 200;
-      light.shadow.camera.fov = 35;
-      light.shadow.mapSize.width = 4096;
-      light.shadow.mapSize.height = 4096;
-
-      return light;
-   }
-
-   function getAmbientLight() {
-      var light = new THREE.AmbientLight(0xFFFFFF);
-
-      return light;
+      scene.add(mesh);
    }
 </script>
 </head>
