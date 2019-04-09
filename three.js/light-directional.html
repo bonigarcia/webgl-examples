@@ -4,7 +4,14 @@
 <head>
 <title>Three.js: Directional light</title>
 
+<style>
+* {
+	margin: 0px;
+}
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
 
 <script>
    function init() {
@@ -26,26 +33,43 @@
          renderer.render(scene, camera);
       };
 
-      addLight(scene);
+      var helper = addLight(scene);
       addSphere(scene);
       addFloor(scene, render);
+
+      // Control
+      var control = new function() {
+         this.lightHelper = false;
+
+         this.update = function() {
+            if (control.lightHelper) {
+               scene.add(helper);
+            } else {
+               scene.remove(helper);
+            }
+            render();
+         }
+      };
+      var gui = new dat.GUI();
+      gui.add(control, 'lightHelper', true, false).onChange(control.update);
    }
 
    function addLight(scene) {
       var light = new THREE.DirectionalLight();
-      light.position.set(20, 20, 20);
-
+      light.position.set(4, 4, 4);
       light.castShadow = true;
-      light.shadow.camera.near = 25;
-      light.shadow.camera.far = 200;
-      light.shadow.camera.left = -150;
-      light.shadow.camera.right = 150;
-      light.shadow.camera.top = 50;
-      light.shadow.camera.bottom = -50;
+      light.shadow.camera.near = 0;
+      light.shadow.camera.far = 16;
+      light.shadow.camera.left = -8;
+      light.shadow.camera.right = 5;
+      light.shadow.camera.top = 10;
+      light.shadow.camera.bottom = -10;
       light.shadow.mapSize.width = 4096;
       light.shadow.mapSize.height = 4096;
-
       scene.add(light);
+
+      var helper = new THREE.CameraHelper(light.shadow.camera);
+      return helper;
    }
 
    function addSphere(scene) {
@@ -54,7 +78,6 @@
       var mesh = new THREE.Mesh(geometry, material);
       mesh.position.z = 1;
       mesh.castShadow = true;
-
       scene.add(mesh);
    }
 
@@ -69,7 +92,6 @@
       material.side = THREE.DoubleSide;
       var mesh = new THREE.Mesh(geometry, material);
       mesh.receiveShadow = true;
-
       scene.add(mesh);
    }
 </script>
