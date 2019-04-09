@@ -41,7 +41,7 @@
          this.far = camera.far;
          this.near = camera.near;
 
-         this.updateCamera = function() {
+         this.update = function() {
             camera.fov = control.fov;
             camera.aspect = control.aspect;
             camera.near = control.near;
@@ -51,10 +51,10 @@
       };
 
       var gui = new dat.GUI();
-      gui.add(control, 'fov', 0, 180).onChange(control.updateCamera);
-      gui.add(control, 'aspect', 0, 4).onChange(control.updateCamera);
-      gui.add(control, 'near', 0, 40).onChange(control.updateCamera);
-      gui.add(control, 'far', 0, 1000).onChange(control.updateCamera);
+      gui.add(control, 'fov', 0, 180).onChange(control.update);
+      gui.add(control, 'aspect', 0, 4).onChange(control.update);
+      gui.add(control, 'near', 0, 40).onChange(control.update);
+      gui.add(control, 'far', 0, 1000).onChange(control.update);
 
       animate(mesh, renderer, scene, camera);
    }
