@@ -2,7 +2,7 @@
 <html>
 
 <head>
-<title>Three.js: Using physics engine</title>
+<title>Three.js: Using a physics engine</title>
 
 <style>
 * {
@@ -57,15 +57,15 @@
          this.gravityY = -10;
          this.gravityZ = 0;
 
-         this.updateGravity = function() {
+         this.update = function() {
             scene.setGravity(new THREE.Vector3(control.gravityX, control.gravityY, control.gravityZ));
          }
       };
 
       var gui = new dat.GUI();
-      gui.add(control, 'gravityX', -50, 50).onChange(control.updateGravity);
-      gui.add(control, 'gravityY', -50, 50).onChange(control.updateGravity);
-      gui.add(control, 'gravityZ', -50, 50).onChange(control.updateGravity);
+      gui.add(control, 'gravityX', -50, 50).onChange(control.update);
+      gui.add(control, 'gravityY', -50, 50).onChange(control.update);
+      gui.add(control, 'gravityZ', -50, 50).onChange(control.update);
 
       animate(sphere, renderer, scene, camera);
    }
@@ -81,18 +81,16 @@
 
    function getLight() {
       var light = new THREE.DirectionalLight();
-      light.position.set(20, 20, 20);
-
+      light.position.set(4, 4, 4);
       light.castShadow = true;
-      light.shadow.camera.near = 25;
-      light.shadow.camera.far = 200;
-      light.shadow.camera.left = -150;
-      light.shadow.camera.right = 150;
-      light.shadow.camera.top = 50;
-      light.shadow.camera.bottom = -50;
+      light.shadow.camera.near = 0;
+      light.shadow.camera.far = 16;
+      light.shadow.camera.left = -8;
+      light.shadow.camera.right = 5;
+      light.shadow.camera.top = 10;
+      light.shadow.camera.bottom = -10;
       light.shadow.mapSize.width = 4096;
       light.shadow.mapSize.height = 4096;
-
       return light;
    }
 
@@ -103,7 +101,6 @@
       mesh.position.z = 1;
       mesh.castShadow = true;
       mesh.name = "sphere";
-
       mesh.addEventListener('collision', function(otherObject) {
          console.log(otherObject.name);
       });
@@ -116,7 +113,6 @@
       var mesh = new Physijs.BoxMesh(geometry, getWoodMaterial(), 0);
       mesh.receiveShadow = true;
       mesh.name = "floor";
-
       return mesh;
    }
 
@@ -126,7 +122,6 @@
       mesh.receiveShadow = true;
       mesh.position.set(posX, posY, posZ);
       mesh.name = name;
-
       return mesh;
    }
 
@@ -138,7 +133,6 @@
       material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
       material.map.repeat.set(4, 4);
       material.side = THREE.DoubleSide;
-
       return material;
    }
 </script>
