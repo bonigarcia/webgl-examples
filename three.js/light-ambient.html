@@ -4,6 +4,12 @@
 <head>
 <title>Three.js: Ambient light</title>
 
+<style>
+* {
+    margin: 0px;
+}
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
 
 <script>
@@ -19,7 +25,6 @@
       var renderer = new THREE.WebGLRenderer({
          antialias : true
       });
-      renderer.shadowMap.enabled = true;
       renderer.setSize(sceneWidth, sceneHeight);
       document.body.appendChild(renderer.domElement);
       var render = function() {
@@ -33,7 +38,6 @@
 
    function addLight(scene) {
       var light = new THREE.AmbientLight(0xFFFFFF);
-
       scene.add(light);
    }
 
@@ -42,8 +46,6 @@
       var material = new THREE.MeshNormalMaterial();
       var mesh = new THREE.Mesh(geometry, material);
       mesh.position.z = 1;
-      mesh.castShadow = true;
-
       scene.add(mesh);
    }
 
@@ -57,8 +59,6 @@
       material.map.repeat.set(4, 4);
       material.side = THREE.DoubleSide;
       var mesh = new THREE.Mesh(geometry, material);
-      mesh.receiveShadow = true;
-
       scene.add(mesh);
    }
 </script>
