@@ -62,18 +62,16 @@
 
    function getLight() {
       var light = new THREE.DirectionalLight();
-      light.position.set(20, 20, 20);
-
+      light.position.set(4, 4, 4);
       light.castShadow = true;
-      light.shadow.camera.near = 25;
-      light.shadow.camera.far = 200;
-      light.shadow.camera.left = -150;
-      light.shadow.camera.right = 150;
-      light.shadow.camera.top = 50;
-      light.shadow.camera.bottom = -50;
+      light.shadow.camera.near = 0;
+      light.shadow.camera.far = 16;
+      light.shadow.camera.left = -8;
+      light.shadow.camera.right = 5;
+      light.shadow.camera.top = 10;
+      light.shadow.camera.bottom = -10;
       light.shadow.mapSize.width = 4096;
       light.shadow.mapSize.height = 4096;
-
       return light;
    }
 
@@ -119,10 +117,6 @@
    }
 
    function checkCollision(sphere, borders) {
-      borders.forEach(function(border) {
-         border.material.transparent = false;
-         border.material.opacity = 1.0;
-      });
       var originPosition = sphere.position.clone();
 
       for (var i = 0; i < sphere.geometry.vertices.length; i++) {
@@ -132,8 +126,7 @@
          var ray = new THREE.Raycaster(originPosition, directionVector.clone().normalize());
          var collisionResults = ray.intersectObjects(borders);
          if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-            collisionResults[0].object.material.transparent = true;
-            collisionResults[0].object.material.opacity = 0.5;
+            // Collision detected
             if (collisionResults[0].object.name == "left" || collisionResults[0].object.name == "right") {
                stepX *= -1;
             }
