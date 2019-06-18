@@ -12,8 +12,8 @@
 
    function init() {
       var scene = new THREE.Scene();
-      var sceneWidth = window.innerWidth;
-      var sceneHeight = window.innerHeight;
+      var sceneWidth = window.innerWidth - 20;
+      var sceneHeight = window.innerHeight - 20;
 
       var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
       camera.position.set(0, -10, 15);
